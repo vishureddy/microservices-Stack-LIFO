@@ -1,0 +1,21 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stack-lifo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      name: stack-lifo
+  template:
+    metadata:
+      labels:
+        name: stack-lifo
+    spec:
+      containers:
+      - name: application
+        image: visweswar1/stack-lifo
+        imagePullPolicy: IfNotPresent
+        ports:
+          - containerPort: 3000
