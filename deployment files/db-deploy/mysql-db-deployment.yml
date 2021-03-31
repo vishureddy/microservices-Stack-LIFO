@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment                                # Type of the kubernetes resource
+metadata:
+  name: stacklifo-mysql                      # Name of the deployment
+  labels:                                        # Labels applied to this deployment 
+    app: stacklifo-mysql
+spec:
+  selector:
+    matchLabels:                                  # This deployment applies to the Pods matching the specified labels
+      app: stacklifo-mysql
+      tier: mysql
+  replicas: 1
+  template:                                       # Template for the Pods in this deployment
+    metadata:
+      labels:                                     # Labels to be applied to the Pods in this deployment
+        app: stacklifo-mysql
+        tier: mysql
+    spec:                                         # The spec for the containers that will be run inside the Pods in this deployment
+      containers:
+        - image: mysql:latest                  # The container image
+          name: mysql
+          imagePullPolicy: "IfNotPresent"
+          envFrom:                                # Get the environmental variables from a secret file whose name is "mysql-secret" 
+            - secretRef:
+                name: mysql-secret
+            
+          ports:
+            - containerPort: 3306                   # The port that the container exposes 
+              name: mysql
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: mysql-persistent-storage     # This name should match the name specified in `volumes.name`
+      volumes:                                      # A PersistentVolume is mounted as a volume to the Pod 
+        - name: mysql-persistent-storage
+          persistentVolumeClaim:
+            claimName: mysql-pv-claim

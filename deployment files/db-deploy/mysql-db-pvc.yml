@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolumeClaim #Type of kubernetes Object
+metadata:
+  name: mysql-pv-claim
+  labels:
+    app: stacklifo-mysql
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi

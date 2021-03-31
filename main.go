@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"github.com/joho/godotenv"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -14,11 +15,12 @@ import (
 )
 
 func main() {
+	dbConn()
 	router := mux.NewRouter()
 	http.Handle("/", router)
 	router.HandleFunc("/push", push).Methods("POST")
 	router.HandleFunc("/pop", pop).Methods("DELETE")
-	http.ListenAndServe(":8090", router)
+	http.ListenAndServe(":8080", router)
 }
 func push(w http.ResponseWriter, r *http.Request) {
 	reqBody, err := ioutil.ReadAll(r.Body)
@@ -29,6 +31,9 @@ func push(w http.ResponseWriter, r *http.Request) {
 	stringValue := string(reqBody)
 	//fmt.Println(stringValue)
 	db := dbConn()
+	// _, _ = db.Query("CREATE DATABASE sampledb")
+	// _, _ = db.Query("USE sampledb")
+	// _, _ = db.Query("CREATE TABLE stack ( Id int NOT NULL AUTO_INCREMENT, elements varchar(255), PRIMARY KEY(Id)")
 	_, er := db.Query("INSERT INTO stack (elements) VALUES (?)", stringValue)
 	if err != nil {
 		log.Fatal(er)
@@ -62,10 +67,34 @@ func pop(w http.ResponseWriter, r *http.Request) {
 	}
 }
 func dbConn() *sql.DB {
-	db, err := sql.Open("mysql", "root:4b3@tcp(127.0.0.1:3306)/stackdb")
+	err := godotenv.Load()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Error loading .env file")
 	}
+	DB_DRIVER := os.Getenv("DB_DRIVER")
+	DB_NAME := os.Getenv("DB_NAME")
+	DB_USER := os.Getenv("DB_USER")
+	DB_PASSWORD := os.Getenv("DB_PASSWORD")
+	db, err := sql.Open(DB_DRIVER, DB_USER+":"+DB_PASSWORD+"@/")
+	_, _ = db.Query("CREATE DATABASE ?", DB_NAME)
+	_, _ = db.Exec("use sampledb")
+	stmt, err := db.Prepare(“CREATE Table stack(Id int NOT NULL AUTO_INCREMENT, elements varchar(50), PRIMARY KEY (id));”)
+	if err != nil {
+	fmt.Println(err.Error())
+	}
+	_, err := stmt.Exec()
+	if err != nil {
+	fmt.Println(err.Error())
+	} else {
+	fmt.Println(“Table created successfully..”)
+	}
+	//_, _ = db.Query("USE sampledb")
+	//	_, _ = db.Query("CREATE TABLE stack ( Id int NOT NULL AUTO_INCREMENT, elements varchar(255), PRIMARY KEY(Id))")
+
+	//db, err := sql.Open("mysql", "root:4b3@tcp(12c7.0.0.1:3306)/stackdb")
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 	return db
 }
 
