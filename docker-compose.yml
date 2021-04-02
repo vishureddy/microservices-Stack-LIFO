@@ -1,56 +1,40 @@
 version: '3.9'
 services:
   app:
-    # container_name: stack_LIFO
-    # build: .
-    image: stack-app:0.2
+    container_name: stacklifo_app
+    build: .
     ports: 
-      - 8080:8080 # Forward the exposed port 8080 on the container to port 8080 on the host machine
+      - 8080:8080 
     restart: on-failure
     volumes:
       - api:/usr/src/app/
     depends_on:
-    - mysql # This service depends on mysql. Start that first.
-    #- postgres # This service depends on postgres. Start that first.
+      - stacklifo-mysql          
     networks:
       - stacklifo
 
-  mysql:
-    image: mysql
+
+  stacklifo-mysql:
+    image: mysql:latest
+    container_name: full_db_mysql
     ports: 
-      # <Port exposed> : < MySQL Port running inside container>
       - 3306:3306
     environment: 
+      - MYSQL_ROOT_HOST=${DB_HOST} 
+      #- MYSQL_USER=${DB_USER}
+      #- MYSQL_PASSWORD=${DB_PASSWORD}
       - MYSQL_DATABASE=${DB_NAME}
-      - MYSQL_USER=${DB_USER}
-      - MYSQL_PASSWORD=${DB_PASSWORD}
       - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
-      - DATABASE_HOST=${DB_HOST} 
-      # Where our data will be persisted
     volumes:
-      # Names our volume
       - database_mysql:/var/lib/mysql
     networks:
       - stacklifo
- # postgres:
-  #   image: postgres:latest
-  #   container_name: full_db
-  #   environment:
-  #     - POSTGRES_USER=${DB_USER}  
-  #     - POSTGRES_PASSWORD=${DB_PASSWORD}
-  #     - POSTGRES_DB=${DB_NAME}
-  #     - DATABASE_HOST=${DB_HOST} 
-  #   ports:
-  #     - '5432:5432'
-  #   volumes:
-  #     - database_postgres:/var/lib/postgresql/data
-  #   networks:
-  #     - stacklifo
-
+  
 volumes:
   api:
-  database_mysql:
+  database_mysql:                  
 
 # Networks to be created to facilitate communication between containers
 networks:
   stacklifo:
+    driver: bridge

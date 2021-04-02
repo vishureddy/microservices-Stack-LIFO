@@ -1,0 +1,39 @@
+openapi: 3.0.0
+info:
+  title: Stack API
+  description: Stack(LIFO) API for performing push and pop operations
+  contact:
+    name: Visweswara Reddy G
+    email: viswaswara@gmail.com
+    url: 'https://github.com/vishureddy'
+  version: '0.1'
+servers:
+  - url: 'http://localhost:8080/'
+paths:
+  /push:
+    description: Pushing the Elements on top of the Stack
+    post:
+      description: Add Elements to Stack
+      requestBody:
+        content:
+          application/text:
+            schema:
+              type: object
+              properties:
+                elements:
+                  type: string
+                  example: Hello
+      responses:
+        '201':
+          description: Record Successfully added
+  /pop:
+    description: Poping elements from the top of Stack
+    delete:
+      description: Remove Elements from Stack
+      responses:
+        '200':
+          description: The request has succeeded
+        '202':
+          description: Accepted
+        '204':
+          description: No Content Found
