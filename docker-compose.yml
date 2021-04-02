@@ -12,11 +12,9 @@ services:
       - stacklifo-mysql          
     networks:
       - stacklifo
-
-
   stacklifo-mysql:
     image: mysql:latest
-    container_name: full_db_mysql
+    container_name: stacklifo_db_mysql
     ports: 
       - 3306:3306
     environment: 
