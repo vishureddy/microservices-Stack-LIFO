@@ -16,7 +16,7 @@ spec:
     spec:                                                     # Spec for the container which will run in the Pod
       containers:
       - name: stacklifo-app-mysql 
-        image: visweswar1/stackapi:0.1                   # The image we are getting from dockerhub <username>/imagename:version_info
+        image: visweswar1/stackapi:0.2                   # The image we are getting from dockerhub <username>/imagename:version_info
         imagePullPolicy: IfNotPresent                         # If we have not pulled it before, get it from dockerhub
         ports:
           - name: http
